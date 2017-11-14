@@ -20,7 +20,7 @@ FLAGS = None
 def main(_):
     mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
     kn = KohonenNetWork()
-    for _ in range(4):
+    for _ in range(10):
         batch_xs, batch_ys = mnist.train.next_batch(1)
         kn.study(list(batch_xs[0]), list(batch_ys[0]))
     print("Сетка обучилась")

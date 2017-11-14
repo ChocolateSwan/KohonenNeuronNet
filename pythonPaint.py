@@ -1,10 +1,7 @@
 from tkinter import *
 from tkinter.filedialog import *
-import pyscreenshot as ImageGrab
-import os
 import io
 from PIL import Image
-import numpy
 
 
 class Paint(Frame):
@@ -12,10 +9,13 @@ class Paint(Frame):
         Frame.__init__(self, parent)
         self.network = kn
         self.parent = parent
+        self.digit_label = None
+        self.color = "black"
         self.setUI()
         self.brush_size = 18
-        self.color = "black"
         self.pixelMatrix = [[0] * 28 for i in range(28)]
+
+
 
 
     def setUI(self):
@@ -40,17 +40,13 @@ class Paint(Frame):
         check_btn = Button(self, text="Check", width=20, command = lambda : self.listener(), bg="green",fg="black")
         check_btn.grid(row=1, column=2)
 
+        self.digit_label = Label(self, text= "?" , font=("Helvetica", 28), fg="blue")
+        self.digit_label.grid(row=0, column=4, columnspan=8,rowspan = 2 )
+
 
         self.canv.bind("<B1-Motion>", self.draw)
-        # print (self.canv)
 
-    def draw(self, event=0):
-        self.pixelMatrix[round(event.y/18)][round(event.x/18)] = 1
-        self.pixelMatrix[round(event.y / 18)-1][round(event.x / 18)-1] = 0.5
-        self.pixelMatrix[round(event.y / 18)-1][round(event.x / 18)+1] = 0.5
-        self.pixelMatrix[round(event.y / 18)+1][round(event.x / 18)+1] = 0.5
-        self.pixelMatrix[round(event.y / 18)+1][round(event.x / 18)-1] = 0.5
-
+    def draw(self, event):
         self.canv.create_oval(event.x - self.brush_size,
                               event.y - self.brush_size,
                               event.x + self.brush_size,
@@ -58,6 +54,7 @@ class Paint(Frame):
                               fill=self.color, outline=self.color)
     def clear (self):
         self.canv.delete("all")
+        self.digit_label['text'] = "?"
         self.pixelMatrix = [[0] * 28 for i in range(28)]
 
 
@@ -66,19 +63,15 @@ class Paint(Frame):
         size = 28,28
         ps = self.canv.postscript(colormode='color')
         img = Image.open(io.BytesIO(ps.encode('utf-8')))
-        # img.thumbnail(size, Image.ANTIALIAS)
         img = img.resize(size, Image.ANTIALIAS)
         result_image = list(img.getdata())
-        print(len(result_image))
 
         result_image = list(map(lambda x: abs((255 - x[0])/255), result_image))
-        print (len(result_image))
-        print(result_image)
-        img.save('./test_image.jpg')
+        img.save('./digit_image.jpg')
 
         list_t = []
         for i in self.pixelMatrix:
             list_t.extend(i)
-        qq = self.network.Handle(result_image)#
-        print (qq)
+        qq = self.network.Handle(result_image)
+        self.digit_label['text'] = str(qq)
 

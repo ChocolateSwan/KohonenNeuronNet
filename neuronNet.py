@@ -72,6 +72,15 @@ class KohonenNetWork:
 
 
     def Handle(self, image):
+        q = 0
+        for i in image:
+            print(round(i,2), end = " ")
+            q += 1
+            if q%28 == 0:
+                print ()
+
+
+
         for i in range(len(self._inputs)):
             input_neuron = self._inputs[i]
             for outgoingLink in input_neuron.OutgoingLinks:
@@ -90,6 +99,7 @@ class KohonenNetWork:
 
         # Снять импульс со всех нейронов
         for neuron in self._neurons:
+            print (neuron.power)
             neuron.power = 0
 
         return max_index

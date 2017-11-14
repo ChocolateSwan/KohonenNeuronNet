@@ -1,5 +1,10 @@
 from tkinter import *
 from tkinter.filedialog import *
+import pyscreenshot as ImageGrab
+import os
+import io
+from PIL import Image
+import numpy
 
 
 class Paint(Frame):
@@ -41,6 +46,10 @@ class Paint(Frame):
 
     def draw(self, event=0):
         self.pixelMatrix[round(event.y/18)][round(event.x/18)] = 1
+        self.pixelMatrix[round(event.y / 18)-1][round(event.x / 18)-1] = 0.5
+        self.pixelMatrix[round(event.y / 18)-1][round(event.x / 18)+1] = 0.5
+        self.pixelMatrix[round(event.y / 18)+1][round(event.x / 18)+1] = 0.5
+        self.pixelMatrix[round(event.y / 18)+1][round(event.x / 18)-1] = 0.5
 
         self.canv.create_oval(event.x - self.brush_size,
                               event.y - self.brush_size,
@@ -54,10 +63,22 @@ class Paint(Frame):
 
 
     def listener (self):
+        size = 28,28
+        ps = self.canv.postscript(colormode='color')
+        img = Image.open(io.BytesIO(ps.encode('utf-8')))
+        # img.thumbnail(size, Image.ANTIALIAS)
+        img = img.resize(size, Image.ANTIALIAS)
+        result_image = list(img.getdata())
+        print(len(result_image))
+
+        result_image = list(map(lambda x: abs((255 - x[0])/255), result_image))
+        print (len(result_image))
+        print(result_image)
+        img.save('./test_image.jpg')
+
+        list_t = []
         for i in self.pixelMatrix:
-            print (i,"\n")
-        # print(self.pixelMatrix)
-        # print (self.canv.find_all())
-        # print (self.canv.coords(1))
-        print("Press button")
+            list_t.extend(i)
+        qq = self.network.Handle(result_image)#
+        print (qq)
 
